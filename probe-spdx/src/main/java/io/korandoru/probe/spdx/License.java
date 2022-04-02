@@ -16,11 +16,14 @@
 
 package io.korandoru.probe.spdx;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record License(
-    String licenseId,
+    @JsonProperty("licenseId") String id,
     String name,
     long referenceNumber,
     boolean isDeprecatedLicenseId,
     boolean isOsiApproved,
     boolean isFsfLibre
-) {}
+) {
+}

@@ -18,7 +18,9 @@ package io.korandoru.probe.spdx;
 
 import io.korandoru.probe.spdx.antlr.generated.LicenseExpressionBaseVisitor;
 import io.korandoru.probe.spdx.antlr.generated.LicenseExpressionParser;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 @Slf4j
 public class DefaultLicenseExpressionVisitor extends LicenseExpressionBaseVisitor<LicenseExpression> {
@@ -32,20 +34,14 @@ public class DefaultLicenseExpressionVisitor extends LicenseExpressionBaseVisito
         final var licenseId = ctx.LICENSE_ID().getText();
         final var license = RegisteredLicenses.find(licenseId).orElseThrow();
         final var orLater = ctx.OR_LATER_MARK() != null;
-        return new LicenseExpression.Single(license, null, orLater);
+        final var exceptionId = Optional.ofNullable(ctx.LICENSE_EXCEPTION_ID()).map(ParseTree::getText);
+        final var exception = exceptionId.map(id -> RegisteredLicenseExceptions.find(id).orElseThrow());
+        return new LicenseExpression.Single(license, exception.orElse(null), orLater);
     }
 
     @Override
     public LicenseExpression visitSingleLicense(LicenseExpressionParser.SingleLicenseContext ctx) {
         return visit(ctx.simpleExpression());
-    }
-
-    @Override
-    public LicenseExpression visitSingleLicenseWithException(LicenseExpressionParser.SingleLicenseWithExceptionContext ctx) {
-        final var baseLicense = (LicenseExpression.Single) visit(ctx.simpleExpression());
-        final var exceptionId = ctx.LICENSE_EXCEPTION_ID().getText();
-        final var exception = RegisteredLicenseExceptions.find(exceptionId).orElseThrow();
-        return new LicenseExpression.Single(baseLicense.license(), exception, baseLicense.orLater());
     }
 
     @Override

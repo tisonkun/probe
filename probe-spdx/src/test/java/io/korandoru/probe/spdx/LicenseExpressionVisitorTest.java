@@ -31,7 +31,7 @@ class LicenseExpressionVisitorTest {
         Assertions.assertThat(licenseExpression).isInstanceOf(LicenseExpression.Single.class);
 
         final var singleLicense = (LicenseExpression.Single) licenseExpression;
-        Assertions.assertThat(singleLicense.license().licenseId()).isEqualTo("Apache-2.0");
+        Assertions.assertThat(singleLicense.license().id()).isEqualTo("Apache-2.0");
         Assertions.assertThat(singleLicense.exception()).isNull();
         Assertions.assertThat(singleLicense.orLater()).isFalse();
     }
@@ -42,8 +42,8 @@ class LicenseExpressionVisitorTest {
         Assertions.assertThat(licenseExpression).isInstanceOf(LicenseExpression.Or.class);
 
         final var or = (LicenseExpression.Or) licenseExpression;
-        Assertions.assertThat(((LicenseExpression.Single) or.leftLicense()).license().licenseId()).isEqualTo("MIT");
-        Assertions.assertThat(((LicenseExpression.Single) or.rightLicense()).license().licenseId()).isEqualTo("Apache-2.0");
+        Assertions.assertThat(((LicenseExpression.Single) or.leftLicense()).license().id()).isEqualTo("MIT");
+        Assertions.assertThat(((LicenseExpression.Single) or.rightLicense()).license().id()).isEqualTo("Apache-2.0");
     }
 
     @Test
@@ -51,6 +51,14 @@ class LicenseExpressionVisitorTest {
         final var firstOrder = parseLicenseExpression("MIT OR Apache-2.0");
         final var secondOrder = parseLicenseExpression("(Apache-2.0 OR (MIT))");
         Assertions.assertThat(LicenseExpression.normalize(firstOrder)).isEqualTo(LicenseExpression.normalize(secondOrder));
+
+        var withExceptionCases = new String[] {
+            "GPL-2.0-only OR GPL-2.0-only WITH Classpath-exception-2.0",
+            "GPL-2.0-only WITH Classpath-exception-2.0 OR GPL-2.0-only"};
+        for (final var withExceptionCase: withExceptionCases) {
+            final var first = LicenseExpression.normalize(parseLicenseExpression(withExceptionCase)).get(0);
+            Assertions.assertThat(first.exception()).isNull();
+        }
     }
 
     private LicenseExpression parseLicenseExpression(String expression) {

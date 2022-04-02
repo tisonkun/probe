@@ -22,9 +22,14 @@ import java.util.Comparator;
 import java.util.List;
 
 public sealed interface LicenseExpression {
-    record Single(License license, LicenseException exception, boolean orLater) implements LicenseExpression {}
-    record And(LicenseExpression leftLicense, LicenseExpression rightLicense) implements LicenseExpression {}
-    record Or(LicenseExpression leftLicense, LicenseExpression rightLicense) implements LicenseExpression {}
+    record Single(License license, LicenseException exception, boolean orLater) implements LicenseExpression {
+    }
+
+    record And(LicenseExpression leftLicense, LicenseExpression rightLicense) implements LicenseExpression {
+    }
+
+    record Or(LicenseExpression leftLicense, LicenseExpression rightLicense) implements LicenseExpression {
+    }
 
     class NormalizationException extends RuntimeException {
         public NormalizationException(String message) {
@@ -35,7 +40,7 @@ public sealed interface LicenseExpression {
     final class SingleComparator implements Comparator<Single> {
         @Override
         public int compare(Single o1, Single o2) {
-            final var compareLicense = o1.license.licenseId().compareTo(o2.license.licenseId());
+            final var compareLicense = o1.license.id().compareTo(o2.license.id());
             if (compareLicense != 0) {
                 return compareLicense;
             }
@@ -45,15 +50,8 @@ public sealed interface LicenseExpression {
                 return compareOrLater;
             }
 
-            if (o1.exception != null && o2.exception != null) {
-                return o1.exception.licenseExceptionId().compareTo(o2.exception.licenseExceptionId());
-            } else if (o1.exception != null) {
-                return 1;
-            } else if (o2.exception != null) {
-                return -1;
-            } else {
-                return  0;
-            }
+            final var comparator = Comparator.nullsFirst(Comparator.comparing(LicenseException::id));
+            return comparator.compare(o1.exception, o2.exception);
         }
     }
 

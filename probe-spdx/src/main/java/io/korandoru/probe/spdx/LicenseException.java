@@ -16,9 +16,12 @@
 
 package io.korandoru.probe.spdx;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record LicenseException(
+    @JsonProperty("licenseExceptionId") String id,
     String name,
-    String licenseExceptionId,
     long referenceNumber,
     boolean isDeprecatedLicenseId
-) { }
+) {
+}

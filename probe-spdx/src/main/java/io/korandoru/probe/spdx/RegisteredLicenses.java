@@ -29,7 +29,7 @@ public final class RegisteredLicenses {
 
     public static Optional<License> find(String id) {
         return REGISTERED_LICENSES.licenses.stream()
-            .filter(e -> e.licenseId().equals(id))
+            .filter(e -> e.id().equals(id))
             .findFirst();
     }
 

@@ -29,7 +29,7 @@ public final class RegisteredLicenseExceptions {
 
     public static Optional<LicenseException> find(String id) {
         return REGISTERED_EXCEPTIONS.exceptions.stream()
-            .filter(e -> e.licenseExceptionId().equals(id))
+            .filter(e -> e.id().equals(id))
             .findFirst();
     }
 

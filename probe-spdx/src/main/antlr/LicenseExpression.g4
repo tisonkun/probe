@@ -16,10 +16,9 @@
 
 grammar LicenseExpression;
 
-simpleExpression: LICENSE_ID OR_LATER_MARK?;
+simpleExpression: LICENSE_ID OR_LATER_MARK? ('WITH' LICENSE_EXCEPTION_ID)?;
 compoundExpression:
     simpleExpression                                # singleLicense
-    | simpleExpression 'WITH' LICENSE_EXCEPTION_ID  # singleLicenseWithException
     | compoundExpression 'AND' compoundExpression   # andExpression
     | compoundExpression 'OR' compoundExpression    # orExpression
     | '(' compoundExpression ')'                    # parenExpression
