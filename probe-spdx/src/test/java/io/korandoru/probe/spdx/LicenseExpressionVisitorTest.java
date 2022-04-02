@@ -18,7 +18,6 @@ package io.korandoru.probe.spdx;
 
 import io.korandoru.probe.spdx.antlr.generated.LicenseExpressionLexer;
 import io.korandoru.probe.spdx.antlr.generated.LicenseExpressionParser;
-import java.util.stream.Collectors;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.assertj.core.api.Assertions;
