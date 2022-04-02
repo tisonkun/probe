@@ -39,6 +39,9 @@ subprojects {
         }
 
         java {
+            // ignore generated files
+            target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
+
             importOrder('', 'static ')
             removeUnusedImports()
             trimTrailingWhitespace()

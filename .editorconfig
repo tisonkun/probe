@@ -4,3 +4,11 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
+
+# This file is downloaded.
+[probe-spdx/src/main/resources/exceptions.json]
+insert_final_newline = unset
+
+# This file is downloaded.
+[probe-spdx/src/main/resources/licenses.json]
+insert_final_newline = unset
