@@ -1,0 +1,26 @@
+name: Sync
+
+on:
+  schedule:
+    - cron: '25 3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  spdx-licenses-and-exceptions:
+    if: (github.event_name == 'schedule' && github.repository == 'korandoru/probe') || (github.event_name != 'schedule')
+    name: Sync SPDX Licenses and Exceptions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch up-to-date licenses and exceptions
+        run: |
+          curl -O https://spdx.org/licenses/licenses.json
+          curl -O https://spdx.org/licenses/exceptions.json
+      - name: Check licenses diff
+        run: diff licenses.json probe-spdx/src/main/resources/licenses.json
+      - name: Check exceptions diff
+        run: diff exceptions.json probe-spdx/src/main/resources/exceptions.json
