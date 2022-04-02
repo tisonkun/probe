@@ -16,19 +16,20 @@
 
 package io.korandoru.probe.spdx;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import java.util.List;
 
-class InitializationTest {
+public final class RegisteredLicenses {
 
-    @Test
-    void initializeExceptions() {
-        Assertions.assertThat(RegisteredExceptions.get()).isNotEmpty();
+    private static final RegisteredLicenses REGISTERED_LICENSES = new RegisteredLicenses();
+
+    public static List<License> get() {
+        return REGISTERED_LICENSES.licenses;
     }
 
-    @Test
-    void initializeLicenses() {
-        Assertions.assertThat(RegisteredLicenses.get()).isNotEmpty();
+    private final List<License> licenses;
+
+    private RegisteredLicenses() {
+        this.licenses = InitializeUtils.loadLicenses();
     }
 
 }

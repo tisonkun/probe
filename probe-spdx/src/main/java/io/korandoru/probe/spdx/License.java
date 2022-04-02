@@ -16,8 +16,6 @@
 
 package io.korandoru.probe.spdx;
 
-import java.util.List;
-
 public record License(
     String licenseId,
     String name,
@@ -25,16 +23,4 @@ public record License(
     boolean isDeprecatedLicenseId,
     boolean isOsiApproved,
     boolean isFsfLibre
-) {
-    public static List<License> getRegistered() {
-        return Registered.SINGLETON.licenses;
-    }
-
-    private enum Registered {
-        SINGLETON;
-        final List<License> licenses;
-        Registered() {
-            this.licenses = InitializeUtils.loadLicenses();
-        }
-    }
-}
+) {}

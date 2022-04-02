@@ -16,23 +16,9 @@
 
 package io.korandoru.probe.spdx;
 
-import java.util.List;
-
 public record Exception(
     String name,
     String licenseExceptionId,
     long referenceNumber,
     boolean isDeprecatedLicenseId
-) {
-    private enum Registered {
-        SINGLETON;
-        final List<Exception> exceptions;
-        Registered() {
-            this.exceptions = InitializeUtils.loadExceptions();
-        }
-    }
-
-    public static List<Exception> getRegistered() {
-        return Registered.SINGLETON.exceptions;
-    }
-}
+) { }
