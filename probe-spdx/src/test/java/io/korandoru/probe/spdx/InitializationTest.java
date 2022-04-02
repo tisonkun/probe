@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package io.korandoru.probe;
+package io.korandoru.probe.spdx;
 
-import org.junit.jupiter.api.Assertions;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class ProbeTest {
+class InitializationTest {
 
     @Test
-    void allonsy() {
-        Assertions.assertEquals(1000 - 7, 993);
+    void initializeExceptions() {
+        Assertions.assertThat(Exception.getRegistered()).isNotEmpty();
+    }
+
+    @Test
+    void initializeLicenses() {
+        Assertions.assertThat(License.getRegistered()).isNotEmpty();
     }
 
 }

@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-package io.korandoru.probe;
+package io.korandoru.probe.spdx;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import java.util.List;
 
-class ProbeTest {
-
-    @Test
-    void allonsy() {
-        Assertions.assertEquals(1000 - 7, 993);
+public record Exception(
+    String name,
+    String licenseExceptionId,
+    long referenceNumber,
+    boolean isDeprecatedLicenseId
+) {
+    private enum Registered {
+        SINGLETON;
+        final List<Exception> exceptions;
+        Registered() {
+            this.exceptions = InitializeUtils.loadExceptions();
+        }
     }
 
+    public static List<Exception> getRegistered() {
+        return Registered.SINGLETON.exceptions;
+    }
 }
