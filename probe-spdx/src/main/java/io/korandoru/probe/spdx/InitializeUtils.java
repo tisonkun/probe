@@ -16,9 +16,9 @@
 
 package io.korandoru.probe.spdx;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -28,21 +28,22 @@ public enum InitializeUtils {
     ;
 
     public static List<License> loadLicenses() {
-        return loadLicensesOrExceptions("licenses");
+        return loadLicensesOrExceptions("licenses", "/licenses.json", License.class);
     }
 
-    public static List<Exception> loadExceptions() {
-        return loadLicensesOrExceptions("exceptions");
+    public static List<LicenseException> loadLicenseExceptions() {
+        return loadLicensesOrExceptions("exceptions", "/exceptions.json", LicenseException.class);
     }
 
-    private static <T> List<T> loadLicensesOrExceptions(String type) {
-        final var path = "/" + type + ".json";
+    private static <T> List<T> loadLicensesOrExceptions(String type, String path, Class<T> elementClass) {
         try {
-            final var exceptionsFile = License.class.getResource(path);
-            final var mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            final var nodes = mapper.readTree(exceptionsFile).get(type).toPrettyString();
-            return mapper.readValue(nodes, new TypeReference<>() {
-            });
+            final var exceptionsFile = InitializeUtils.class.getResource(path);
+            final var mapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+            return mapper.convertValue(
+                mapper.readTree(exceptionsFile).path(type),
+                mapper.getTypeFactory().constructCollectionType(ArrayList.class, elementClass));
         } catch (Throwable t) {
             log.warn("Cannot load {} from {}.", type, path, t);
             return Collections.emptyList();

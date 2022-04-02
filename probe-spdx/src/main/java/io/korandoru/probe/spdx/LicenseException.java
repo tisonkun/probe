@@ -16,27 +16,9 @@
 
 package io.korandoru.probe.spdx;
 
-import java.util.List;
-import java.util.Optional;
-
-public final class RegisteredLicenses {
-
-    private static final RegisteredLicenses REGISTERED_LICENSES = new RegisteredLicenses();
-
-    public static List<License> get() {
-        return REGISTERED_LICENSES.licenses;
-    }
-
-    public static Optional<License> find(String id) {
-        return REGISTERED_LICENSES.licenses.stream()
-            .filter(e -> e.licenseId().equals(id))
-            .findFirst();
-    }
-
-    private final List<License> licenses;
-
-    private RegisteredLicenses() {
-        this.licenses = InitializeUtils.loadLicenses();
-    }
-
-}
+public record LicenseException(
+    String name,
+    String licenseExceptionId,
+    long referenceNumber,
+    boolean isDeprecatedLicenseId
+) { }

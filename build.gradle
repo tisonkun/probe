@@ -1,4 +1,5 @@
 plugins {
+    id 'antlr'
     id 'java'
     id 'nebula.dependency-recommender' version '9.0.2'
     id 'com.diffplug.spotless' version '6.3.0'
@@ -48,10 +49,12 @@ subprojects {
 
     compileJava {
         options.encoding = "UTF-8"
+        options.compilerArgs += ["--enable-preview"]
     }
 
     compileTestJava {
         options.encoding = "UTF-8"
+        options.compilerArgs += ["--enable-preview"]
     }
 
     javadoc {
@@ -73,12 +76,17 @@ subprojects {
     }
 
     test {
+        jvmArgs += "--enable-preview"
         useJUnitPlatform()
     }
 }
 
 project(':probe-spdx') {
+    apply plugin: 'antlr'
+
     dependencies {
+        antlr "org.antlr:antlr4:4.9.3"
+
         compileOnly 'org.projectlombok:lombok:1.18.22'
         annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
@@ -88,5 +96,11 @@ project(':probe-spdx') {
         implementation 'com.fasterxml.jackson.core:jackson-annotations'
         implementation 'com.fasterxml.jackson.core:jackson-core'
         implementation 'com.fasterxml.jackson.core:jackson-databind'
+    }
+
+    generateGrammarSource {
+        arguments += ["-visitor", "-long-messages"]
+        arguments += ["-package", "io.korandoru.probe.spdx.antlr.generated"]
+        outputDirectory = new File(outputDirectory, "io/korandoru/probe/spdx/antlr/generated")
     }
 }

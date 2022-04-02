@@ -17,19 +17,26 @@
 package io.korandoru.probe.spdx;
 
 import java.util.List;
+import java.util.Optional;
 
-public final class RegisteredExceptions {
+public final class RegisteredLicenseExceptions {
 
-    private static final RegisteredExceptions REGISTERED_EXCEPTIONS = new RegisteredExceptions();
+    private static final RegisteredLicenseExceptions REGISTERED_EXCEPTIONS = new RegisteredLicenseExceptions();
 
-    public static List<Exception> get() {
+    public static List<LicenseException> get() {
         return REGISTERED_EXCEPTIONS.exceptions;
     }
 
-    private final List<Exception> exceptions;
+    public static Optional<LicenseException> find(String id) {
+        return REGISTERED_EXCEPTIONS.exceptions.stream()
+            .filter(e -> e.licenseExceptionId().equals(id))
+            .findFirst();
+    }
 
-    private RegisteredExceptions() {
-        this.exceptions = InitializeUtils.loadExceptions();
+    private final List<LicenseException> exceptions;
+
+    private RegisteredLicenseExceptions() {
+        this.exceptions = InitializeUtils.loadLicenseExceptions();
     }
 
 }

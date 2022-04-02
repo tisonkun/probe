@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 class InitializationTest {
 
     @Test
-    void initializeExceptions() {
-        Assertions.assertThat(RegisteredExceptions.get()).isNotEmpty();
+    void initializeLicenseExceptions() {
+        Assertions.assertThat(RegisteredLicenseExceptions.get()).isNotEmpty();
     }
 
     @Test

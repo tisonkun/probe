@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package io.korandoru.probe.spdx;
+grammar LicenseExpression;
 
-public record Exception(
-    String name,
-    String licenseExceptionId,
-    long referenceNumber,
-    boolean isDeprecatedLicenseId
-) { }
+simpleExpression: LICENSE_ID OR_LATER_MARK?;
+compoundExpression:
+    simpleExpression                                # singleLicense
+    | simpleExpression 'WITH' LICENSE_EXCEPTION_ID  # singleLicenseWithException
+    | compoundExpression 'AND' compoundExpression   # andExpression
+    | compoundExpression 'OR' compoundExpression    # orExpression
+    | '(' compoundExpression ')'                    # parenExpression
+    ;
+
+OR_LATER_MARK: '+';
+LICENSE_ID: [-.A-Za-z0-9]+;
+LICENSE_EXCEPTION_ID: [-.A-Za-z0-9]+;
+WHITESPACE: [ \t\r\n]+ -> skip;
