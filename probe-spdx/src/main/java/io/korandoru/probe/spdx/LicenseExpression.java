@@ -16,25 +16,49 @@
 
 package io.korandoru.probe.spdx;
 
+import io.korandoru.probe.spdx.antlr.generated.LicenseExpressionLexer;
+import io.korandoru.probe.spdx.antlr.generated.LicenseExpressionParser;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 public sealed interface LicenseExpression {
     record Single(License license, LicenseException exception, boolean orLater) implements LicenseExpression {
+        @Override
+        public String toString() {
+            return license.id() +
+                (orLater ? "+" : "") +
+                (exception != null ? " WITH " + exception : "");
+        }
     }
 
     record And(LicenseExpression leftLicense, LicenseExpression rightLicense) implements LicenseExpression {
+        @Override
+        public String toString() {
+            return leftLicense.toString() + " AND " + rightLicense.toString();
+        }
     }
 
     record Or(LicenseExpression leftLicense, LicenseExpression rightLicense) implements LicenseExpression {
+        @Override
+        public String toString() {
+            return leftLicense.toString() + " OR " + rightLicense.toString();
+        }
     }
 
     class NormalizationException extends RuntimeException {
         public NormalizationException(String message) {
             super(message);
         }
+    }
+
+    static LicenseExpression parse(String expression) {
+        final var lexer = new LicenseExpressionLexer(CharStreams.fromString(expression));
+        final var parser = new LicenseExpressionParser(new CommonTokenStream(lexer));
+        return new DefaultLicenseExpressionVisitor().visit(parser.compoundExpression());
     }
 
     final class SingleComparator implements Comparator<Single> {

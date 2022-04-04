@@ -1,4 +1,5 @@
 com.fasterxml.jackson.core:* = 2.13.1
+org.projectlombok:lombok = 1.18.22
 org.slf4j:* = 1.7.25
 
 # test deps

@@ -16,10 +16,6 @@
 
 package io.korandoru.probe.spdx;
 
-import io.korandoru.probe.spdx.antlr.generated.LicenseExpressionLexer;
-import io.korandoru.probe.spdx.antlr.generated.LicenseExpressionParser;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +23,7 @@ class LicenseExpressionVisitorTest {
 
     @Test
     void parseApacheLicense() {
-        final var licenseExpression = parseLicenseExpression("Apache-2.0");
+        final var licenseExpression = LicenseExpression.parse("Apache-2.0");
         Assertions.assertThat(licenseExpression).isInstanceOf(LicenseExpression.Single.class);
 
         final var singleLicense = (LicenseExpression.Single) licenseExpression;
@@ -38,7 +34,7 @@ class LicenseExpressionVisitorTest {
 
     @Test
     void parseOrLicenses() {
-        final var licenseExpression = parseLicenseExpression("MIT OR Apache-2.0");
+        final var licenseExpression = LicenseExpression.parse("MIT OR Apache-2.0");
         Assertions.assertThat(licenseExpression).isInstanceOf(LicenseExpression.Or.class);
 
         final var or = (LicenseExpression.Or) licenseExpression;
@@ -47,24 +43,29 @@ class LicenseExpressionVisitorTest {
     }
 
     @Test
+    void parseLicensesException() {
+        final var licenseExpression = LicenseExpression.parse("Apache-2.0 WITH Swift-exception");
+        Assertions.assertThat(licenseExpression).isInstanceOf(LicenseExpression.Single.class);
+
+        final var singleLicense = (LicenseExpression.Single) licenseExpression;
+        Assertions.assertThat(singleLicense.license().id()).isEqualTo("Apache-2.0");
+        Assertions.assertThat(singleLicense.exception().id()).isEqualTo("Swift-exception");
+        Assertions.assertThat(singleLicense.orLater()).isFalse();
+    }
+
+    @Test
     void normalize() {
-        final var firstOrder = parseLicenseExpression("MIT OR Apache-2.0");
-        final var secondOrder = parseLicenseExpression("(Apache-2.0 OR (MIT))");
+        final var firstOrder = LicenseExpression.parse("MIT OR Apache-2.0");
+        final var secondOrder = LicenseExpression.parse("(Apache-2.0 OR (MIT))");
         Assertions.assertThat(LicenseExpression.normalize(firstOrder)).isEqualTo(LicenseExpression.normalize(secondOrder));
 
         var withExceptionCases = new String[] {
             "GPL-2.0-only OR GPL-2.0-only WITH Classpath-exception-2.0",
             "GPL-2.0-only WITH Classpath-exception-2.0 OR GPL-2.0-only"};
         for (final var withExceptionCase: withExceptionCases) {
-            final var first = LicenseExpression.normalize(parseLicenseExpression(withExceptionCase)).get(0);
+            final var first = LicenseExpression.normalize(LicenseExpression.parse(withExceptionCase)).get(0);
             Assertions.assertThat(first.exception()).isNull();
         }
-    }
-
-    private LicenseExpression parseLicenseExpression(String expression) {
-        final var lexer = new LicenseExpressionLexer(CharStreams.fromString(expression));
-        final var parser = new LicenseExpressionParser(new CommonTokenStream(lexer));
-        return new DefaultLicenseExpressionVisitor().visit(parser.compoundExpression());
     }
 
 }

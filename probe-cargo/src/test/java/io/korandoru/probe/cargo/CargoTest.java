@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-grammar LicenseExpression;
+package io.korandoru.probe.cargo;
 
-simpleExpression: LICENSE_OR_EXCEPTION_ID OR_LATER_MARK? ('WITH' LICENSE_OR_EXCEPTION_ID)?;
-compoundExpression:
-    simpleExpression                                # singleLicense
-    | compoundExpression 'AND' compoundExpression   # andExpression
-    | compoundExpression ('OR'|'/') compoundExpression    # orExpression
-    | '(' compoundExpression ')'                    # parenExpression
-    ;
+import java.nio.file.Path;
+import java.util.Objects;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-OR_LATER_MARK: '+';
-LICENSE_OR_EXCEPTION_ID: [-.A-Za-z0-9]+;
-WHITESPACE: [ \t\r\n]+ -> skip;
+class CargoTest {
+
+    @Test
+    void parseDepLicenses() throws Exception {
+        final var rootDir = Objects.requireNonNull(CargoTest.class.getResource("/stub"));
+        final var cargo = Cargo.parseCargo(Path.of(rootDir.toURI()));
+        Assertions.assertThat(cargo.crates()).containsExactlyInAnyOrder(
+            new Crate("anyhow", "Apache-2.0 OR MIT"),
+            new Crate("stub", "Apache-2.0"));
+    }
+
+}

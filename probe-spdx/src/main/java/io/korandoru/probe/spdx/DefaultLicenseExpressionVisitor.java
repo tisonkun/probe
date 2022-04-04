@@ -31,10 +31,10 @@ public class DefaultLicenseExpressionVisitor extends LicenseExpressionBaseVisito
 
     @Override
     public LicenseExpression visitSimpleExpression(LicenseExpressionParser.SimpleExpressionContext ctx) {
-        final var licenseId = ctx.LICENSE_ID().getText();
+        final var licenseId = ctx.LICENSE_OR_EXCEPTION_ID(0).getText();
         final var license = RegisteredLicenses.find(licenseId).orElseThrow();
         final var orLater = ctx.OR_LATER_MARK() != null;
-        final var exceptionId = Optional.ofNullable(ctx.LICENSE_EXCEPTION_ID()).map(ParseTree::getText);
+        final var exceptionId = Optional.ofNullable(ctx.LICENSE_OR_EXCEPTION_ID(1)).map(ParseTree::getText);
         final var exception = exceptionId.map(id -> RegisteredLicenseExceptions.find(id).orElseThrow());
         return new LicenseExpression.Single(license, exception.orElse(null), orLater);
     }

@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-grammar LicenseExpression;
+package io.korandoru.probe.cargo;
 
-simpleExpression: LICENSE_OR_EXCEPTION_ID OR_LATER_MARK? ('WITH' LICENSE_OR_EXCEPTION_ID)?;
-compoundExpression:
-    simpleExpression                                # singleLicense
-    | compoundExpression 'AND' compoundExpression   # andExpression
-    | compoundExpression ('OR'|'/') compoundExpression    # orExpression
-    | '(' compoundExpression ')'                    # parenExpression
-    ;
-
-OR_LATER_MARK: '+';
-LICENSE_OR_EXCEPTION_ID: [-.A-Za-z0-9]+;
-WHITESPACE: [ \t\r\n]+ -> skip;
+public record Crate(String name, String license) {
+}

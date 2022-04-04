@@ -1,2 +1,4 @@
 rootProject.name = 'probe'
 include 'probe-spdx'
+include 'probe-cargo'
+
