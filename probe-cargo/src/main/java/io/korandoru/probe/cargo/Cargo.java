@@ -44,13 +44,13 @@ public record Cargo(List<Crate> crates) {
                 crates.add(new Crate(name, "Unknown"));
                 continue;
             }
-            final var licenseExpression = LicenseExpression.parse(licenseNode.asText());
-            final ArrayList<String> normalizedLicenses;
+            final List<String> normalizedLicenses;
             try {
+                final var licenseExpression = LicenseExpression.parse(licenseNode.asText());
                 final var licenses = LicenseExpression.normalize(licenseExpression);
                 normalizedLicenses = new ArrayList<>(licenses.stream().map(Object::toString).toList());
-            } catch (LicenseExpression.NormalizationException e) {
-                log.warn("Cannot normalize expression {}, fallback to unknown", licenseExpression, e);
+            } catch (Exception e) {
+                log.warn("Cannot normalize expression {}, fallback to unknown", licenseNode.asText(), e);
                 crates.add(new Crate(name, "Unknown"));
                 continue;
             }

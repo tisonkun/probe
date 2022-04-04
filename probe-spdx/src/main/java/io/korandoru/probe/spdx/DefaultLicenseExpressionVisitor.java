@@ -50,13 +50,4 @@ public class DefaultLicenseExpressionVisitor extends LicenseExpressionBaseVisito
         final var rightLicense = visit(ctx.compoundExpression(1));
         return new LicenseExpression.Or(leftLicense, rightLicense);
     }
-
-    @Override
-    public LicenseExpression visitAndExpression(LicenseExpressionParser.AndExpressionContext ctx) {
-        final var leftLicense = visit(ctx.compoundExpression(0));
-        final var rightLicense = visit(ctx.compoundExpression(1));
-        return new LicenseExpression.And(leftLicense, rightLicense);
-    }
-
-
 }

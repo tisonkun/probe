@@ -35,23 +35,10 @@ public sealed interface LicenseExpression {
         }
     }
 
-    record And(LicenseExpression leftLicense, LicenseExpression rightLicense) implements LicenseExpression {
-        @Override
-        public String toString() {
-            return leftLicense.toString() + " AND " + rightLicense.toString();
-        }
-    }
-
     record Or(LicenseExpression leftLicense, LicenseExpression rightLicense) implements LicenseExpression {
         @Override
         public String toString() {
             return leftLicense.toString() + " OR " + rightLicense.toString();
-        }
-    }
-
-    class NormalizationException extends RuntimeException {
-        public NormalizationException(String message) {
-            super(message);
         }
     }
 
@@ -88,7 +75,6 @@ public sealed interface LicenseExpression {
             final var exp = expressionQueue.removeFirst();
             switch (exp) {
                 case Single single -> result.add(single);
-                case And ignored -> throw new NormalizationException("Cannot normalize license expressions with AND.");
                 case Or or -> {
                     expressionQueue.addLast(or.leftLicense);
                     expressionQueue.addLast(or.rightLicense);
